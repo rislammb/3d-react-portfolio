@@ -1,5 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import { Suspense, useState } from 'react';
+import HomeInfo from '../components/HomeInfo';
 import Loader from '../components/Loader';
 import Bird from '../models/Bird';
 import Island from '../models/Island';
@@ -7,11 +8,12 @@ import Plane from '../models/Plane';
 import Sky from '../models/Sky';
 
 const Home = () => {
-  const [isRatating, setIsRotating] = useState(false);
+  const [isRotating, setIsRotating] = useState(false);
+  const [currentStage, setCurrentStage] = useState(1);
 
   const adjustIslandForScreenSize = () => {
     let screenScale = null;
-    let screenPosition = [4.7, -6.5, -43];
+    let screenPosition = [0, -6.5, -43];
     let rotation = [0.1, 4.7, 0];
 
     if (window.innerWidth < 786) {
@@ -43,13 +45,13 @@ const Home = () => {
 
   return (
     <section className='w-full h-screen relative'>
-      {/* <div className='absolute top-28 left-0 right-0 z-10 flex items-center justify-center'>
-        POPUP
-      </div> */}
+      <div className='absolute top-28 left-0 right-0 z-10 flex items-center justify-center'>
+        {currentStage && <HomeInfo currentStage={currentStage} />}
+      </div>
 
       <Canvas
         className={`w-full h-screen bg-transparent ${
-          isRatating ? 'cursor-grabbing' : 'cursor-grab'
+          isRotating ? 'cursor-grabbing' : 'cursor-grab'
         }`}
         camera={{ near: 0.1, far: 1000 }}
       >
@@ -62,17 +64,18 @@ const Home = () => {
             intensity={1}
           />
 
-          <Bird />
-          <Sky />
+          <Bird isRotating={isRotating} />
+          <Sky isRotating={isRotating} />
           <Island
             scale={islandScale}
             position={islandPosition}
             rotation={islandRotation}
-            isRatating={isRatating}
+            isRotating={isRotating}
             setIsRotating={setIsRotating}
+            setCurrentStage={setCurrentStage}
           />
           <Plane
-            isRatating={isRatating}
+            isRotating={isRotating}
             scale={planeScale}
             position={planePosition}
             rotation={[0, 20, 0]}
