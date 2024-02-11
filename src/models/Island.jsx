@@ -1,14 +1,13 @@
 /* eslint-disable react/no-unknown-property */
 import { a } from '@react-spring/three';
 import { useGLTF } from '@react-three/drei';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useFrame, useThree } from '@react-three/fiber';
 import islandScene from '../assets/3d/island.glb';
 
-const Island = ({ isRotating, setIsRotating, ...props }) => {
+const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
   const islandRef = useRef();
-  const [currentStage, setCurrentStage] = useState(1);
 
   const { gl, viewport } = useThree();
   const { nodes, materials } = useGLTF(islandScene);
@@ -22,9 +21,7 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
     e.preventDefault();
     setIsRotating(true);
 
-    console.log('e.touches', e.touches);
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    console.log('client x', clientX);
     lastX.current = clientX;
   };
 
@@ -39,16 +36,13 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
     e.preventDefault();
 
     if (isRotating) {
-      console.log('e.touches', e.touches);
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      console.log('client x', clientX);
 
       const delta = (clientX - lastX.current) / viewport.width;
-      console.log('delta');
 
       islandRef.current.rotation.y += delta * 0.01 * Math.PI;
       lastX.current = clientX;
-      rotationSpeed.current = delta * 0.01 * Math.Pi;
+      rotationSpeed.current = delta * 0.01 * Math.PI;
     }
   };
 
@@ -75,6 +69,8 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
       if (Math.abs(rotationSpeed.current) < 0.001) {
         rotationSpeed.current = 0;
       }
+
+      islandRef.current.rotation.y += rotationSpeed.current;
     } else {
       const rotation = islandRef.current.rotation.y;
 
@@ -117,7 +113,14 @@ const Island = ({ isRotating, setIsRotating, ...props }) => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, [gl, handlePointerDown, handlePointerUp, handlePointerMove]);
+  }, [
+    gl,
+    handlePointerDown,
+    handlePointerUp,
+    handlePointerMove,
+    handleKeyDown,
+    handleKeyUp,
+  ]);
 
   return (
     <a.group {...props} ref={islandRef}>
