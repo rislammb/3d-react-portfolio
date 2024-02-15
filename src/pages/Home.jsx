@@ -1,74 +1,60 @@
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useEffect, useRef, useState } from 'react';
-import HomeInfo from '../components/HomeInfo';
+import { Suspense, useState } from 'react';
 import Loader from '../components/Loader';
 import Bird from '../models/Bird';
 import Island from '../models/Island';
 import Plane from '../models/Plane';
 import Sky from '../models/Sky';
 
-import { soundoff, soundon } from '../assets/icons';
-import sakura from '../assets/sakura.mp3';
-
 const Home = () => {
-  const audioRef = useRef(new Audio(sakura));
-  audioRef.current.volume = 0.3;
-  audioRef.current.loop = true;
-
   const [isRotating, setIsRotating] = useState(false);
   const [currentStage, setCurrentStage] = useState(1);
-  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
-
-  useEffect(() => {
-    if (isPlayingMusic) {
-      audioRef.current.play();
-    }
-
-    return () => {
-      audioRef.current.pause();
-    };
-  }, [isPlayingMusic]);
 
   const adjustIslandForScreenSize = () => {
-    let screenScale = null;
-    let screenPosition = [0, -6.5, -43];
-    let rotation = [0.1, 4.7, 0];
+    const position = [0, -6.5, -43];
+    let scale = null;
+    const rotation = [0.1, 4.7, 0];
 
     if (window.innerWidth < 786) {
-      screenScale = [0.9, 0.9, 0.9];
+      scale = [0.9, 0.9, 0.9];
     } else {
-      screenScale = [1, 1, 1];
+      scale = [1, 1, 1];
     }
 
-    return [screenScale, screenPosition, rotation];
+    return [position, scale, rotation];
   };
 
   const adjustPlaneForScreenSize = () => {
-    let screenScale, screenPosition;
+    let position, scale;
+    const rotation = [0, 20, 0];
 
     if (window.innerWidth < 786) {
-      screenScale = [1.5, 1.5, 1.5];
-      screenPosition = [0, -1.5, 0];
+      position = [0, -1.7, 0];
+      scale = [1.5, 1.5, 1.5];
     } else {
-      screenScale = [3, 3, 3];
-      screenPosition = [0, -4, -4];
+      position = [0, -4, -4];
+      scale = [3, 3, 3];
     }
 
-    return [screenScale, screenPosition];
+    return [position, scale, rotation];
   };
 
-  const [islandScale, islandPosition, islandRotation] =
+  const [islandPosition, islandScale, islandRotation] =
     adjustIslandForScreenSize();
-  const [planeScale, planePosition] = adjustPlaneForScreenSize();
+  const [planePosition, planeScale, planeRotation] = adjustPlaneForScreenSize();
 
   return (
-    <section className='w-full h-screen relative'>
-      <div className='absolute top-28 left-0 right-0 z-10 flex items-center justify-center'>
-        {currentStage && <HomeInfo currentStage={currentStage} />}
+    <section className='h-screen w-full relative'>
+      <div className='absolute top-24 left-0 right-0 z-10 flex items-center justify-center'>
+        {currentStage && (
+          <h3 className='bg-green-200 py-3 px-8 shadow-lg rounded-3xl text-2xl text-center'>
+            {currentStage}
+          </h3>
+        )}
       </div>
 
       <Canvas
-        className={`w-full h-screen bg-transparent ${
+        className={`h-screen w-full bg-transparent ${
           isRotating ? 'cursor-grabbing' : 'cursor-grab'
         }`}
         camera={{ near: 0.1, far: 1000 }}
@@ -82,33 +68,24 @@ const Home = () => {
             intensity={1}
           />
 
-          <Bird isRotating={isRotating} />
           <Sky isRotating={isRotating} />
+          <Bird />
           <Island
-            scale={islandScale}
             position={islandPosition}
+            scale={islandScale}
             rotation={islandRotation}
             isRotating={isRotating}
             setIsRotating={setIsRotating}
             setCurrentStage={setCurrentStage}
           />
           <Plane
-            isRotating={isRotating}
-            scale={planeScale}
             position={planePosition}
-            rotation={[0, 20, 0]}
+            scale={planeScale}
+            rotation={planeRotation}
+            isRotating={isRotating}
           />
         </Suspense>
       </Canvas>
-
-      <div className='absolute bottom-2 left-2'>
-        <img
-          src={isPlayingMusic ? soundoff : soundon}
-          alt='sound'
-          className='w-10 h-10 cursor-pointer object-contain'
-          onClick={() => setIsPlayingMusic(!isPlayingMusic)}
-        />
-      </div>
     </section>
   );
 };

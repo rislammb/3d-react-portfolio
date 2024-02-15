@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unknown-property */
 import { a } from '@react-spring/three';
 import { useGLTF } from '@react-three/drei';
 import { useEffect, useRef } from 'react';
@@ -8,9 +7,8 @@ import islandScene from '../assets/3d/island.glb';
 
 const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
   const islandRef = useRef();
-
-  const { gl, viewport } = useThree();
   const { nodes, materials } = useGLTF(islandScene);
+  const { gl, viewport } = useThree();
 
   const lastX = useRef(0);
   const rotationSpeed = useRef(0);
@@ -19,8 +17,8 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
   const handlePointerDown = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    setIsRotating(true);
 
+    setIsRotating(true);
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     lastX.current = clientX;
   };
@@ -28,6 +26,7 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
   const handlePointerUp = (e) => {
     e.stopPropagation();
     e.preventDefault();
+
     setIsRotating(false);
   };
 
@@ -37,29 +36,28 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
 
     if (isRotating) {
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-
       const delta = (clientX - lastX.current) / viewport.width;
 
       islandRef.current.rotation.y += delta * 0.01 * Math.PI;
-      lastX.current = clientX;
       rotationSpeed.current = delta * 0.01 * Math.PI;
+      lastX.current = clientX;
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'ArrowLeft') {
-      if (!isRotating) setIsRotating(true);
-      islandRef.current.rotation.y += 0.01 * Math.PI;
-      rotationSpeed.current = 0.0125;
-    } else if (e.key === 'ArrowRight') {
+    if (e.key === 'ArrowRight') {
       if (!isRotating) setIsRotating(true);
       islandRef.current.rotation.y -= 0.01 * Math.PI;
       rotationSpeed.current = -0.0125;
+    } else if (e.key === 'ArrowLeft') {
+      if (!isRotating) setIsRotating(true);
+      islandRef.current.rotation.y += 0.01 * Math.PI;
+      rotationSpeed.current = 0.0125;
     }
   };
 
   const handleKeyUp = (e) => {
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
       setIsRotating(false);
     }
   };
@@ -157,7 +155,5 @@ const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
     </a.group>
   );
 };
-
-useGLTF.preload('/island.glb');
 
 export default Island;
