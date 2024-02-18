@@ -12,7 +12,7 @@ export const Alert = ({ type, text }) => {
         <p
           className={`${
             type === 'danger' ? 'bg-red-500' : 'bg-blue-500'
-          } fle rounded-full uppercase px-2 py-1 font-semibold mr-3 text-xs`}
+          } flex rounded-full uppercase px-2 py-1 font-semibold mr-3 text-xs`}
         >
           {type === 'danger' ? 'Faild' : 'Success'}
         </p>
