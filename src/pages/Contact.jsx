@@ -41,20 +41,20 @@ const Contact = () => {
         import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
       )
       .then(() => {
-        setIsLoading(false);
         showAlert({ text: 'Message sent successfully!', type: 'success' });
+        setForm({ name: '', email: '', message: '' });
+      })
+      .catch((error) => {
+        console.log('Error sending message => ', error);
+        showAlert({ text: "I didn't receive your message!", type: 'danger' });
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setCurrentAnimation('idle');
 
         setTimeout(() => {
           hideAlert();
-          setCurrentAnimation('idle');
-          setForm({ name: '', email: '', message: '' });
         }, 3000);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        setCurrentAnimation('idle');
-        console.log(error);
-        showAlert({ text: "I didn't receive your message!", type: 'danger' });
       });
   };
 
